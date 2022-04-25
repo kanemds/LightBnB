@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const properties = require('./json/properties.json');
 const users = require('./json/users.json');
 
@@ -58,8 +59,16 @@ exports.getUserWithEmail = getUserWithEmail;
  * @param {string} id The id of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithId = function(id) {
-  return Promise.resolve(users[id]);
+const getUserWithId = async function(id) {
+  return pool
+    .query(`SELECT * FROM users WHERE users.id = $1`, [id])
+    .then((result) => {
+      console.log(result);
+      return result.rows.id;
+    })
+    .catch((err) => {
+      console.error(err.message);
+    });
 };
 exports.getUserWithId = getUserWithId;
 
@@ -155,7 +164,7 @@ const getAllProperties = async(options, limit = 10) => {
   }
 
   if (options.maximum_price_per_night && options.maximum_price_per_night.length > 0) {
-    queryParams.push(`${parseInt(options.maximum_price_per_night) * 100}`);
+    queryParams.push(`${parseInt(options.maximum_price_per_night) * 100 }`);
     where.push(`cost_per_night <= $${queryParams.length}`);
   }
 
@@ -191,9 +200,59 @@ exports.getAllProperties = getAllProperties;
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+  const {
+    owner_id,
+    title,
+    description,
+    thumbnail_photo_url,
+    cover_photo_url,
+    cost_per_night,
+    street,
+    city,
+    province,
+    post_code,
+    country,
+    parking_spaces,
+    number_of_bathrooms,
+    number_of_bedrooms
+  } = property;
+  return pool
+    .query(`INSERT INTO properties (owner_id,
+      title,
+      description,
+      thumbnail_photo_url,
+      cover_photo_url,
+      cost_per_night,
+      street,
+      city,
+      province,
+      post_code,
+      country,
+      parking_spaces,
+      number_of_bathrooms,
+      number_of_bedrooms
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *`, [
+      owner_id,
+      title,
+      description,
+      thumbnail_photo_url,
+      cover_photo_url,
+      cost_per_night,
+      street,
+      city,
+      province,
+      post_code,
+      country,
+      parking_spaces,
+      number_of_bathrooms,
+      number_of_bedrooms
+    ])
+    .then((result) => {
+      console.log(result);
+      return result.rows;
+    })
+    .catch((err) => {
+      console.error(err.message);
+    });
 };
 exports.addProperty = addProperty;
