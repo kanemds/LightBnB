@@ -15,16 +15,6 @@ pool.connect(()=>{
   console.log('Connected successfuly to the database');
 });
 
-// pool.on('error', (err, client) => {
-//   console.error('Unexpected error on idle client', err);
-//   process.exit(-1);
-// });
-
-// pool.query(`SELECT title FROM properties LIMIT 10;`).then(response => {
-//   console.log(response);
-// });
-/// Users
-
 /**
  * Get a single user from the database given their email.
  * @param {String} email The email of the user.
@@ -41,17 +31,7 @@ const getUserWithEmail = async function(email) {
       console.error(err.message);
     });
 };
-//   let user;
-//   for (const userId in users) {
-//     user = users[userId];
-//     if (user.email.toLowerCase() === email.toLowerCase()) {
-//       break;
-//     } else {
-//       user = null;
-//     }
-//   }
-//   return Promise.resolve(user);
-// };
+
 exports.getUserWithEmail = getUserWithEmail;
 
 /**
@@ -97,10 +77,7 @@ const addUser = async function(user) {
     .catch((err) => {
       console.error(err.message);
     });
-  // const userId = Object.keys(users).length + 1;
-  // user.id = userId;
-  // users[userId] = user;
-  // return Promise.resolve(user);
+
 };
 exports.addUser = addUser;
 
